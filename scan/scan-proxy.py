@@ -1,12 +1,9 @@
 import socket
 import os
-import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# File input yang berisi daftar proxy
+# File input yang berisi daftar IP dan port
 file_input = "scan/rawProxyList.txt"
-# Token API ipinfo.io (opsional, gunakan jika memiliki akun premium untuk menghindari rate limit)
-IPINFO_TOKEN = ""  # Contoh: "123456789abcdef"
 
 def Cek_proxy(ip, port, timeout=3):
     """Memeriksa koneksi IP dan PORT menggunakan socket"""
@@ -16,44 +13,18 @@ def Cek_proxy(ip, port, timeout=3):
     except (socket.timeout, socket.error):
         return False
 
-def Get_ASN(ip, cache_asn):
-    """Mengambil informasi ASN dari ipinfo.io dengan caching"""
-    if ip in cache_asn:
-        return cache_asn[ip]
-    
-    try:
-        url = f"https://ipinfo.io/{ip}/json"
-        if IPINFO_TOKEN:
-            url += f"?token={IPINFO_TOKEN}"
-        
-        response = requests.get(url, timeout=3)
-        if response.status_code == 200:
-            data = response.json()
-            asn = data.get("org", "")
-            cache_asn[ip] = asn
-            return asn
-    except requests.RequestException:
-        pass  # Jika API gagal, lanjutkan tanpa error
-    
-    return ""
-
-def Is_Cloudflare(ip, cache_asn):
-    """Cek apakah IP menggunakan Cloudflare berdasarkan ASN"""
-    asn = Get_ASN(ip, cache_asn)
-    return "AS13335" in asn  # Cloudflare ASN
-
 def Clear_file(filepath):
     """Menghapus isi file sebelum menulis data baru"""
-    open(filepath, 'w').close()
+    open(filepath, 'w').close()  # Buka file dengan 'w' untuk mengosongkannya
 
 def Save_to_file(filepath, data, cache):
     """Simpan data ke file tanpa duplikasi"""
     if data not in cache:
         with open(filepath, 'a') as f:
             f.write(data + '\n')
-        cache.add(data)
+        cache.add(data)  # Tambahkan ke cache untuk mencegah duplikasi
 
-def Cek_ip_port(line, save_path, active_cache, dead_cache, cloudflare_cache, cache_asn):
+def Cek_ip_port(line, save_path, active_cache, dead_cache):
     """Cek apakah proxy aktif atau tidak, lalu simpan hasilnya"""
     parts = line.strip().split(',')
     if len(parts) >= 2:
@@ -71,11 +42,7 @@ def Cek_ip_port(line, save_path, active_cache, dead_cache, cloudflare_cache, cac
         
         if Cek_proxy(ip_address, port_number):
             Save_to_file(os.path.join(save_path, "active.txt"), result, active_cache)
-            print(f"[AKTIF] {result}")
-            
-            if Is_Cloudflare(ip_address, cache_asn):
-                Save_to_file(os.path.join(save_path, "cloudflare.txt"), result, cloudflare_cache)
-                print(f"[CLOUDFLARE] {result}")
+            print(f"[AKTIF] {result} ")
         else:
             Save_to_file(os.path.join(save_path, "dead.txt"), result, dead_cache)
             print(f"[TIDAK AKTIF] {result}")
@@ -87,22 +54,19 @@ def Read_ip_port(filename, max_workers=100):
     # Hapus isi file sebelum mulai
     Clear_file(os.path.join(save_path, "active.txt"))
     Clear_file(os.path.join(save_path, "dead.txt"))
-    Clear_file(os.path.join(save_path, "cloudflare.txt"))
 
     # Cache untuk mencegah duplikasi
     active_cache = set()
     dead_cache = set()
-    cloudflare_cache = set()
-    cache_asn = {}  # Cache untuk menyimpan ASN berdasarkan IP
 
     try:
         with open(filename, 'r') as file:
             lines = file.readlines()
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(Cek_ip_port, line, save_path, active_cache, dead_cache, cloudflare_cache, cache_asn) for line in lines]
+            futures = [executor.submit(Cek_ip_port, line, save_path, active_cache, dead_cache) for line in lines]
             for future in as_completed(futures):
-                future.result()
+                future.result()  # Pastikan setiap tugas selesai
 
     except FileNotFoundError:
         print(f"File '{filename}' tidak ditemukan.")
