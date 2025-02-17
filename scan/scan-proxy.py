@@ -3,7 +3,10 @@ import os
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+# File input yang berisi daftar proxy
 file_input = "scan/rawProxyList.txt"
+# Token API ipinfo.io (opsional, gunakan jika memiliki akun premium untuk menghindari rate limit)
+IPINFO_TOKEN = ""  # Contoh: "123456789abcdef"
 
 def Cek_proxy(ip, port, timeout=3):
     """Memeriksa koneksi IP dan PORT menggunakan socket"""
@@ -13,18 +16,31 @@ def Cek_proxy(ip, port, timeout=3):
     except (socket.timeout, socket.error):
         return False
 
-def Is_Cloudflare(ip):
-    """Cek apakah IP menggunakan Cloudflare berdasarkan ASN"""
+def Get_ASN(ip, cache_asn):
+    """Mengambil informasi ASN dari ipinfo.io dengan caching"""
+    if ip in cache_asn:
+        return cache_asn[ip]
+    
     try:
-        # Menggunakan RDAP API (Alternatif untuk mengecek ASN)
-        response = requests.get(f"https://rdap.arin.net/registry/ip/{ip}", timeout=3)
+        url = f"https://ipinfo.io/{ip}/json"
+        if IPINFO_TOKEN:
+            url += f"?token={IPINFO_TOKEN}"
+        
+        response = requests.get(url, timeout=3)
         if response.status_code == 200:
             data = response.json()
-            asn = data.get("entities", [{}])[0].get("handle", "")
-            return "13335" in asn  # Cloudflare ASN
+            asn = data.get("org", "")
+            cache_asn[ip] = asn
+            return asn
     except requests.RequestException:
         pass  # Jika API gagal, lanjutkan tanpa error
-    return False
+    
+    return ""
+
+def Is_Cloudflare(ip, cache_asn):
+    """Cek apakah IP menggunakan Cloudflare berdasarkan ASN"""
+    asn = Get_ASN(ip, cache_asn)
+    return "AS13335" in asn  # Cloudflare ASN
 
 def Clear_file(filepath):
     """Menghapus isi file sebelum menulis data baru"""
@@ -37,7 +53,7 @@ def Save_to_file(filepath, data, cache):
             f.write(data + '\n')
         cache.add(data)
 
-def Cek_ip_port(line, save_path, active_cache, dead_cache, cloudflare_cache):
+def Cek_ip_port(line, save_path, active_cache, dead_cache, cloudflare_cache, cache_asn):
     """Cek apakah proxy aktif atau tidak, lalu simpan hasilnya"""
     parts = line.strip().split(',')
     if len(parts) >= 2:
@@ -57,7 +73,7 @@ def Cek_ip_port(line, save_path, active_cache, dead_cache, cloudflare_cache):
             Save_to_file(os.path.join(save_path, "active.txt"), result, active_cache)
             print(f"[AKTIF] {result}")
             
-            if Is_Cloudflare(ip_address):
+            if Is_Cloudflare(ip_address, cache_asn):
                 Save_to_file(os.path.join(save_path, "cloudflare.txt"), result, cloudflare_cache)
                 print(f"[CLOUDFLARE] {result}")
         else:
@@ -77,13 +93,14 @@ def Read_ip_port(filename, max_workers=100):
     active_cache = set()
     dead_cache = set()
     cloudflare_cache = set()
+    cache_asn = {}  # Cache untuk menyimpan ASN berdasarkan IP
 
     try:
         with open(filename, 'r') as file:
             lines = file.readlines()
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(Cek_ip_port, line, save_path, active_cache, dead_cache, cloudflare_cache) for line in lines]
+            futures = [executor.submit(Cek_ip_port, line, save_path, active_cache, dead_cache, cloudflare_cache, cache_asn) for line in lines]
             for future in as_completed(futures):
                 future.result()
 
