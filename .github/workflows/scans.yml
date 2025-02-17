@@ -22,8 +22,8 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install Dependencies
-      run: pip install -r requirements.txt 
+    - name: Install Requests
+      run: pip install requests
     
     - name: 🔄 Update Proxy Status
       run: |
