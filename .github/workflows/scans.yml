@@ -1,40 +1,38 @@
-name: Proxy Scaner
+name: Scan Proxy & Push Changes
 
 on:
-  # Workflow dapat dijalankan secara manual
-  workflow_dispatch:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: '0 * * * *'  # Menjalankan setiap jam
+  workflow_dispatch:  # Memungkinkan menjalankan workflow secara manual
+
+permissions:
+  contents: write  # Memberikan izin untuk melakukan push
 
 jobs:
-  update-proxies:
+  scan-proxy:
     runs-on: ubuntu-latest
-    name: Scan Proxy
 
     steps:
-    - name: 📂 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: 🐍 Set Up Python
-      uses: actions/setup-python@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
       with:
-        python-version: '3.x'
+        python-version: '3.x'  # Sesuaikan dengan versi yang dibutuhkan
 
-    - name: Install Requests
-      run: pip install requests
-    
-    - name: 🔄 Update Proxy Status
-      run: |
-        python3 ./scan/scan-proxy.py
+    - name: Install Dependencies
+      run: pip install -r requirements.txt || pip install requests
 
-    #Commit dan push perubahan jika ada
-    - name: 📤 Commit and Push Changes
-      if: ${{ success() }}
+    - name: Run scan-proxy.py
+      run: python3 ./scan/scan-proxy.py
+
+    - name: Commit and Push Changes
       run: |
         git config --global user.name "Github Actions"
         git config --global user.email "actions@github.com"
         git add .
-        git commit -m "Update proxyip"
-        git push origin main --force
+        git commit -m "Update proxyip" || echo "No changes to commit"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/xuniversal/huntipcf.git main --force
