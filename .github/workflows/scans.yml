@@ -2,7 +2,7 @@ name: Scan Proxy & Push Changes
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Menjalankan setiap jam
+    - cron: '0 0 * * *'  # Menjalankan setiap jam 00:00 UTC (setiap 24 jam)
   workflow_dispatch:  # Memungkinkan menjalankan workflow secara manual
 
 permissions:
@@ -22,9 +22,6 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: '3.x'  # Sesuaikan dengan versi yang dibutuhkan
-
-    - name: Install Dependencies
-      run: pip install -r requirements.txt || pip install requests
 
     - name: Run scan-proxy.py
       run: python3 ./scan/scan-proxy.py
