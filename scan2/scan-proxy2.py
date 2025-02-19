@@ -3,11 +3,12 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import ipaddress  # Untuk menangani rentang IP
 
-# Rentang IP dan port
-start_ip = "192.168.1.1"  # Ganti dengan IP awal
-end_ip = "192.168.1.10"    # Ganti dengan IP akhir
-start_port = 1              # Port awal
-end_port = 10               # Port akhir
+# Rentang IP untuk wilayah Asia
+start_ip = "1.0.0.0"  # Ganti dengan IP awal
+end_ip = "223.255.255.255"  # Ganti dengan IP akhir
+
+# Port umum yang biasa digunakan
+common_ports = [21, 22, 23, 25, 53, 80, 1080, 1081, 3128, 443, 8000, 8080, 8443]
 
 def Cek_proxy(ip, port, timeout=3):
     """Memeriksa koneksi IP dan PORT menggunakan socket"""
@@ -39,7 +40,7 @@ def Cek_ip_port(ip_address, port, save_path, active_cache, dead_cache):
         Save_to_file(os.path.join(save_path, "dead.txt"), result, dead_cache)
         print(f"[TIDAK AKTIF] {result}")
 
-def Read_ip_port(start_ip, end_ip, start_port, end_port, max_workers=100):
+def Read_ip_port(start_ip, end_ip, ports, max_workers=100):
     """Cek status IP dan port dalam rentang yang diberikan dengan thread pool"""
     save_path = os.getcwd()  # Simpan di direktori kerja saat ini
 
@@ -61,7 +62,7 @@ def Read_ip_port(start_ip, end_ip, start_port, end_port, max_workers=100):
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = []
             for ip in ip_list:
-                for port in range(start_port, end_port + 1):
+                for port in ports:
                     futures.append(executor.submit(Cek_ip_port, ip, port, save_path, active_cache, dead_cache))
             for future in as_completed(futures):
                 future.result()  # Pastikan setiap tugas selesai
@@ -70,4 +71,4 @@ def Read_ip_port(start_ip, end_ip, start_port, end_port, max_workers=100):
         print("Format IP salah. Pastikan IP valid.")
 
 # Jalankan pengecekan proxy
-Read_ip_port(start_ip, end_ip, start_port, end_port)
+Read_ip_port(start_ip, end_ip, common_ports)
