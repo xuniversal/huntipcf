@@ -54,10 +54,12 @@ def Read_ip_port(start_ip, end_ip, start_port, end_port, max_workers=100):
     # Menghasilkan rentang IP
     try:
         ip_range = [str(ip) for ip in ipaddress.summarize_address_range(ipaddress.IPv4Address(start_ip), ipaddress.IPv4Address(end_ip))]
+        
+        # Mengumpulkan daftar IP dari rentang yang ditentukan
         ip_list = []
         for ip in ip_range:
             ip_list.append(ip)
-        
+
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = []
             for ip in ip_list:
