@@ -1,4 +1,4 @@
-name: Scan Proxy & Push Changes
+name: Scan Proxy & Push Changes - 2
 
 on:
   schedule:
