@@ -4,10 +4,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import ipaddress  # Untuk menangani rentang IP
 
 # Rentang IP dan port
-start_ip = "202.78.0.0"  # Ganti dengan IP awal
-end_ip = "180.248.0.0"    # Ganti dengan IP akhir
+start_ip = "192.168.1.1"  # Ganti dengan IP awal
+end_ip = "192.168.1.10"    # Ganti dengan IP akhir
 start_port = 1              # Port awal
-end_port = 65.535               # Port akhir
+end_port = 10               # Port akhir
 
 def Cek_proxy(ip, port, timeout=3):
     """Memeriksa koneksi IP dan PORT menggunakan socket"""
