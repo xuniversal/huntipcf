@@ -2,7 +2,7 @@ name: Scan Proxy & Push Changes
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Menjalankan setiap jam 00:00 UTC (setiap 24 jam)
+    - cron: '0 0 * * 1'  # Menjalankan setiap hari Senin pukul 00:00 UTC
   workflow_dispatch:  # Memungkinkan menjalankan workflow secara manual
 
 permissions:
