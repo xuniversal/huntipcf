@@ -3,7 +3,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # File input yang berisi daftar IP dan port
-file_input = "scan/rawProxyList.txt"
+file_input = "scan/rawproxy.txt"
 
 def Cek_proxy(ip, port, timeout=3):
     """Memeriksa koneksi IP dan PORT menggunakan socket"""
