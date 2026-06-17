@@ -1,10 +1,5 @@
 {
-  "vmess": [
-    "aio.cn-a.workers.dev",
-    "aio.cn-b.workers.dev",
-    "aio.cn-c.workers.dev"
-  ],
-  "others": [
+  "domains": [
     "aio.cn-a.workers.dev",
     "aio.cn-b.workers.dev",
     "aio.cn-c.workers.dev",
