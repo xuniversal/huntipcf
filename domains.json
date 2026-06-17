@@ -1,16 +1,16 @@
 {
   "vmess": [
-    "aio.coe-a.workers.dev",
-    "aio.coe-b.workers.dev",
-    "aio.coe-c.workers.dev",
-    "aio.coe-d.workers.dev"
+    "aio.cn-a.workers.dev",
+    "aio.cn-b.workers.dev",
+    "aio.cn-c.workers.dev",
+    "aio.cn-d-cf8.workers.dev"
   ],
   "others": [
-    "aio.coe-e.workers.dev",
-    "aio.coe-f.workers.dev",
-    "aio.coe-g.workers.dev",
-    "aio.coe-h.workers.dev",
-    "aio.coe-i.workers.dev",
-    "aio.coe-j.workers.dev"
+    "aio.cn-e.workers.dev",
+    "aio.cn-f.workers.dev",
+    "aio.cn-g.workers.dev",
+    "aio.cn-h.workers.dev",
+    "aio.cn-i.workers.dev",
+    "aio.cn-j.workers.dev"
   ]
 }
