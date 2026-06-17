@@ -2,10 +2,13 @@
   "vmess": [
     "aio.cn-a.workers.dev",
     "aio.cn-b.workers.dev",
-    "aio.cn-c.workers.dev",
-    "aio.cn-d-cf8.workers.dev"
+    "aio.cn-c.workers.dev"
   ],
   "others": [
+    "aio.cn-a.workers.dev",
+    "aio.cn-b.workers.dev",
+    "aio.cn-c.workers.dev",
+    "aio.cn-d-cf8.workers.dev",
     "aio.cn-e.workers.dev",
     "aio.cn-f.workers.dev",
     "aio.cn-g.workers.dev",
