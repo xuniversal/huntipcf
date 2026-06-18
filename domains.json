@@ -1,14 +1,32 @@
+
 {
   "domains": [
-    "aio.cn-a.workers.dev",
-    "aio.cn-b.workers.dev",
-    "aio.cn-c.workers.dev",
-    "aio.cn-d-cf8.workers.dev",
-    "aio.cn-e.workers.dev",
-    "aio.cn-f.workers.dev",
-    "aio.cn-g.workers.dev",
-    "aio.cn-h.workers.dev",
-    "aio.cn-i.workers.dev",
-    "aio.cn-j.workers.dev"
+    "aio.code-a.biz.id",
+    "aio.code-b.biz.id",
+    "aio.code-c.biz.id",
+    "aio.code-d.biz.id",
+    "aio.code-e.biz.id",
+    "aio.code-f.biz.id",
+    "aio.code-g.biz.id",
+    "aio.code-h.biz.id",
+    "aio.code-i.biz.id",
+    "aio.code-j.biz.id",
+    "aio.code-k.biz.id",
+    "aio.code-l.biz.id",
+    "aio.code-m.biz.id",
+    "aio.code-n.biz.id",
+    "aio.code-o.biz.id",
+    "aio.code-p.biz.id",
+    "aio.code-q.biz.id",
+    "aio.code-r.biz.id",
+    "aio.code-s.biz.id",
+    "aio.code-t.biz.id",
+    "aio.code-u.biz.id",
+    "aio.code-v.biz.id",
+    "aio.code-w.biz.id",
+    "aio.code-x.biz.id",
+    "aio.code-y.biz.id",
+    "aio.code-z.biz.id"
   ]
 }
+```
